@@ -1,0 +1,36 @@
+{
+  "name": "zq-vue-form-core",
+  "version": "1.0.0",
+  "description": "easy create form page",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build":"rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zq78049721/zq-vue-form-core.git"
+  },
+  "keywords": [
+    "form",
+    "vue"
+  ],
+  "author": "zhuqing",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zq78049721/zq-vue-form-core/issues"
+  },
+  "homepage": "https://github.com/zq78049721/zq-vue-form-core#readme",
+  "dependencies": {
+    "async-validator":"4.1.1"
+  },
+  "devDependencies": {
+    "rollup":"2.74.1",
+    "rollup-plugin-babel":"4.4.0",
+    "rollup-plugin-node-resolve":"5.2.0",
+    "@babel/core":"7.18.0",
+    "babel-plugin-external-helpers":"6.22.0",
+    "@babel/preset-env":"7.18.0",
+    "rollup-plugin-terser":"7.0.2"
+  }
+}
