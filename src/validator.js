@@ -27,7 +27,7 @@ export default function (values, type, vm) {
             key,
             value,
         }
-    }, true, (item) => {
+    }, true, (item,key) => {
         vm.formData.fields[key].error = null;
         return item.rules && item.rules.length && item.visable(vm);
     })
@@ -43,7 +43,7 @@ export default function (values, type, vm) {
                     vm.formData.fields[error.field].error = message;
                 })
             }
-            reslove[errors, values, fields];
+            reslove([errors, values, fields]);
         });
     })
 }
