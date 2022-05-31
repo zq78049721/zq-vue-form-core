@@ -1,18 +1,32 @@
 import { mapObj, each } from './uitl';
+import createMutStore from './mutStore'
 
-export default function ({ getFields, getInitialValues, onSubmit, onChange, singleFieldName = true }) {
+export default function ({ getFields, getInitialValues, onSubmit, onChange, muts }) {
+    const mutsStore =muts;
+    const groupStore = new Map();
+    const _getMutFields = mutsStore.getMutFields;
+    mutsStore.getMutFields = function (fieldName, values,vm) {
+        const mutFileds = _getMutFields(fieldName, values,vm);
+        each(mutFileds, (field) => {
+            field.group = groupStore.get(fieldName)
+        })
+        return mutFileds;
+    }
+
     async function _getFields(props, vm) {
         const result = await getFields(props, vm);
-        const groupFields = mapObj(result, (group, groupName) => {
+        const groupFields = mapObj(result, (groupItem, groupName) => {
+            const group = {
+                ...groupItem,
+                name: groupName
+            }
             const fieldItems = mapObj(group.items, (item, itemName) => {
+                groupStore.set(itemName, group);
                 return {
                     ...item,
-                    name: singleFieldName ? itemName : `${groupName}$$_$$${itemName}`,
-                    originName:itemName,
-                    group: {
-                        ...group,
-                        name: groupName
-                    },
+                    name:  itemName,
+                    originName: itemName,
+                    group
                 }
             })
             return fieldItems;
@@ -31,12 +45,12 @@ export default function ({ getFields, getInitialValues, onSubmit, onChange, sing
     async function _onSubmit(values, vm) {
         const result = {};
         each(values, (value, prop) => {
-            const {group,originName}=vm.formData.fields[prop];
+            const group=groupStore.get(prop);
             const { name } = group;
             if (!result[name]) {
                 result[name] = {};
             }
-            result[name][originName] = value;
+            result[name][prop] = value;
         })
         return onSubmit(result, vm)
     }
@@ -45,6 +59,7 @@ export default function ({ getFields, getInitialValues, onSubmit, onChange, sing
         getInitialValues,
         onChange,
         getFields: _getFields,
-        onSubmit: _onSubmit
+        onSubmit: _onSubmit,
+        muts:mutsStore,
     }
 }
