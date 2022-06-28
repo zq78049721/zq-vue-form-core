@@ -1,7 +1,7 @@
 
 import createVisable from './createvVisable';
 import { keyValueListToJson, each, mapObj } from './uitl';
-import validator from './validator';
+import validator,{validateField} from './validator';
 import merge from './merge'
 
 async function loadInitValues(getInitialValues, vm) {
@@ -163,13 +163,14 @@ function create({ getFields, getInitialValues, onSubmit, onChange, muts }) {
             async onChangeOrBlur(value, field, type) {
                 const vm = this;
                 field.value = value;
-                await onChange(value, field, type, vm)
+                if(onChange){
+                    await onChange(value, field, type, vm)
+                }
                 const values = getValues(vm, type);
                 const { trigger = "change" } = field;
                 if (type === "all" || type === trigger) {
-                    validator(values, type, vm);
+                    validateField(values, field, vm);
                 }
-
             },
 
             onChange({ value, field }) {
@@ -191,13 +192,14 @@ function create({ getFields, getInitialValues, onSubmit, onChange, muts }) {
                 const values = getValues(vm, "all");
                 const [errors] = await validator(values, "all", vm);
                 if (errors) {
-                    return;
+                    return [errors];
                 }
                 try {
                     this.formData.loading = true;
                     const mergeValues = merge(values, vm.formData.fields);
                     await onSubmit(mergeValues, vm);
                     this.formData.loading = false;
+                    return [null,mergeValues];
                 }
                 catch (error) {
                     this.formData.loading = false;
